@@ -1,4 +1,7 @@
-﻿using System;
+﻿using CommandLine;
+using SBRP.ComandVerbs;
+using SBRP.Commands;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +13,8 @@ namespace SBRP
     {
         static void Main(string[] args)
         {
+            var results = Parser.Default.ParseArguments<Generate>(args);
+            results.WithParsed<Generate>(opts => { (new GenerateCommand(opts)).run(); });
         }
     }
 }

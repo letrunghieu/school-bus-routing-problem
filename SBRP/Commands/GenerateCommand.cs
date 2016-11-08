@@ -24,12 +24,11 @@ namespace SBRP.Commands
 
             double r, theta, x, y;
             Random randomR = new Random();
-            Random randomTheta = new Random();
 
             for (var i = 0; i < this._options.NumBusStops; i++)
             {
                 r = randomR.NextDouble() * (this._options.MaxRiddingTime - this._options.MaxWalkingTime) + this._options.MaxWalkingTime;
-                theta = randomTheta.NextDouble() * Math.PI * 2;
+                theta = randomR.NextDouble() * Math.PI * 2;
                 x = r * Math.Cos(theta);
                 y = r * Math.Sin(theta);
 

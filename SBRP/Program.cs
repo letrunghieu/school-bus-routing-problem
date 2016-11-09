@@ -13,8 +13,9 @@ namespace SBRP
     {
         static void Main(string[] args)
         {
-            var results = Parser.Default.ParseArguments<Generate>(args);
-            results.WithParsed<Generate>(opts => { (new GenerateCommand(opts)).run(); });
+            var results = Parser.Default.ParseArguments<Generate, Solve>(args);
+            results.WithParsed<Generate>(opts => { (new GenerateCommand(opts)).run(); })
+                .WithParsed<Solve>(opts => { (new SolveCommand(opts)).run(); });
         }
     }
 }

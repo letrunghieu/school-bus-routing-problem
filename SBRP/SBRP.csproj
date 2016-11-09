@@ -48,7 +48,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComandVerbs\Generate.cs" />
+    <Compile Include="ComandVerbs\Solve.cs" />
     <Compile Include="Commands\GenerateCommand.cs" />
+    <Compile Include="Commands\SolveCommand.cs" />
+    <Compile Include="IO\InputInterface.cs" />
     <Compile Include="Items\BusStop.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -57,6 +60,7 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

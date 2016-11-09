@@ -25,6 +25,9 @@ namespace SBRP.Commands
             double r, theta, x, y;
             Random randomR = new Random();
 
+            double meanStudentPerStop = ((double)this._options.NumStudents) / this._options.NumBusStops;
+            int maxStudentPerStop = Convert.ToInt32(Math.Round(meanStudentPerStop * 2));
+
             for (var i = 0; i < this._options.NumBusStops; i++)
             {
                 r = randomR.NextDouble() * (this._options.MaxRiddingTime - this._options.MaxWalkingTime) + this._options.MaxWalkingTime;
@@ -33,7 +36,7 @@ namespace SBRP.Commands
                 y = r * Math.Sin(theta);
 
                 busStops[i] = new BusStop(x, y);
-                busStops[i].NumStudent = 1;
+                busStops[i].NumStudent = randomR.Next(1, maxStudentPerStop);
             }
 
             using (StreamWriter file = new StreamWriter(@"bus-stops.txt", false, Encoding.UTF8))

@@ -19,6 +19,6 @@ namespace SBRP.IO
         /// Get the distance matrix as a 2-dimenstional matrix of double numbers
         /// </summary>
         /// <returns></returns>
-        double[][] getDistanceMatrix();
+        double[,] getDistanceMatrix();
     }
 }

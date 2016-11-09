@@ -12,6 +12,8 @@ namespace SBRP.Items
         public double Y { get; set; }
         public int NumStudent { get; set; }
 
+        public BusStop() { }
+
         public BusStop(double x, double y)
         {
             this.X = x;

@@ -1,4 +1,5 @@
 ﻿using SBRP.ComandVerbs;
+using SBRP.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,9 @@ namespace SBRP.Commands
 
         public void run()
         {
+            InputInterface input = new OriginalFileInput(this._options.BusStops, this._options.DistanceMatrix);
+            input.getBusStops();
+            input.getDistanceMatrix();
 
         }
     }

@@ -1,4 +1,5 @@
-﻿using SBRP.ComandVerbs;
+﻿using SBRP.Algorithms.GeneticKang2015;
+using SBRP.ComandVerbs;
 using SBRP.IO;
 using System;
 using System.Collections.Generic;
@@ -20,9 +21,24 @@ namespace SBRP.Commands
         public void run()
         {
             InputInterface input = new OriginalFileInput(this._options.BusStops, this._options.DistanceMatrix);
-            input.getBusStops();
-            input.getDistanceMatrix();
+            SchoolBusRoutingProblem sbrp = new SchoolBusRoutingProblem(input.getBusStops(), input.getDistanceMatrix())
+            {
+                NumBuses = this._options.NumBuses,
+                VehicleCapacity = this._options.BusCapacity,
+                MaxRiddingTime = this._options.MaxRidingTime
+            };
 
+            OriginalOutput output = new OriginalOutput();
+
+            GeneticKang2015 ga = new GeneticKang2015(sbrp, output)
+            {
+                CrossoverRate = this._options.CrossoverRate,
+                MutationRate = this._options.MutationRate,
+                ElitismNumber = this._options.ElitismNumber,
+                PopulationSize = this._options.PopulationSize
+            };
+
+            ga.run();
         }
     }
 }

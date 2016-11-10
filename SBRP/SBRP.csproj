@@ -51,15 +51,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Algorithms\GeneticKang2015\Entity.cs" />
+    <Compile Include="Algorithms\GeneticKang2015\GeneticKang2015.cs" />
+    <Compile Include="Algorithms\GeneticKang2015\Population.cs" />
     <Compile Include="ComandVerbs\Generate.cs" />
     <Compile Include="ComandVerbs\Solve.cs" />
     <Compile Include="Commands\GenerateCommand.cs" />
     <Compile Include="Commands\SolveCommand.cs" />
     <Compile Include="IO\InputInterface.cs" />
     <Compile Include="IO\OriginalFileInput.cs" />
+    <Compile Include="IO\OriginalOutput.cs" />
+    <Compile Include="IO\OutputInterface.cs" />
     <Compile Include="Items\BusStop.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SchoolBusRoutingProblem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

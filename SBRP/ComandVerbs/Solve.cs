@@ -33,5 +33,8 @@ namespace SBRP.ComandVerbs
 
         [Option("mrt", HelpText = "The maximum riding time in minutes")]
         public int MaxRidingTime { get; set; }
+
+        [Option('p', "population-size", HelpText = "The population size for genetic algorithm", Default = 50)]
+        public int PopulationSize { get; set; }
     }
 }

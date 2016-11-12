@@ -32,8 +32,11 @@ namespace SBRP.Algorithms.GeneticKang2015
 
         public void run()
         {
+            double r;
             this._generateInitialPopulation();
             this._sort();
+
+            r = this._rand.NextDouble();
         }
 
         private void _generateInitialPopulation()
@@ -44,7 +47,7 @@ namespace SBRP.Algorithms.GeneticKang2015
                 // Allocate buses to bus stops
                 List<int> buses = Enumerable.Range(1, this._sbrp.NumBuses).ToList();
                 List<int> busStops = Enumerable.Range(1, this._sbrp.NumBusStops).ToList();
-                Entity entity = new Entity(this._sbrp.NumBuses);
+                Entity entity = new Entity(this._sbrp.NumBuses, this._sbrp.BusStops.Length);
                 int index, bus, busStop, busCapacity;
 
                 index = this._rand.Next(0, buses.Count - 1);
@@ -74,15 +77,32 @@ namespace SBRP.Algorithms.GeneticKang2015
                     entity.assignBusToBusStop(bus, busStop);
                 }
 
-                this._population.addEntity(entity);
+                entity.sortBusStopsInRoutes(this._sbrp.DistanceMatrix);
+                this._population.addEntity(entity.encode());
             }
         }
-        private void _sort() { }
+
+        /// <summary>
+        /// Sort the population by the fitness
+        /// </summary>
+        private void _sort() {
+            this._population.sortEntities(this._calculateFitness);
+        }
         private void _updateElites() { }
         private void _crossover() { }
         private void _mutation5Case() { }
         private void _selectOneIndividual() { }
         private void _repair() { }
+
+        /// <summary>
+        /// Calculate the fitness of each entity
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        private double _calculateFitness(Entity entity)
+        {
+            return entity.getTotalDistance(this._sbrp.DistanceMatrix);
+        }
 
     }
 }

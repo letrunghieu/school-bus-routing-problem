@@ -31,10 +31,13 @@ namespace SBRP.ComandVerbs
         [Option('c', "bus-capacity", HelpText = "The capacity of each bus", Default = 30)]
         public int BusCapacity { get; set; }
 
-        [Option("mrt", HelpText = "The maximum riding time in minutes")]
-        public int MaxRidingTime { get; set; }
+        [Option("mrt", HelpText = "The maximum riding time in minutes", Default = 30)]
+        public double MaxRidingTime { get; set; }
 
         [Option('p', "population-size", HelpText = "The population size for genetic algorithm", Default = 50)]
         public int PopulationSize { get; set; }
+
+        [Option('g', "num-generations", HelpText = "The maximum number of generations", Default = 50)]
+        public int NumGenerations { get; set; }
     }
 }

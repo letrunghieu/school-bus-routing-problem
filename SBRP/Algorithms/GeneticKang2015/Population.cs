@@ -21,6 +21,10 @@ namespace SBRP.Algorithms.GeneticKang2015
             this._entities.Add(entity);
         }
 
+        /// <summary>
+        /// Sort entities so that the one with the minimum fitness comes first
+        /// </summary>
+        /// <param name="fitnessFunc"></param>
         public void sortEntities(Func<Entity, double> fitnessFunc)
         {
             for (var i = 0; i < this._entities.Count; i++)
@@ -32,17 +36,36 @@ namespace SBRP.Algorithms.GeneticKang2015
             {
                 if (e1.Fitness > e2.Fitness)
                 {
-                    return -1;
+                    return 1;
                 }
                 else if (e1.Fitness < e2.Fitness)
                 {
-                    return 1;
+                    return -1;
                 }
                 else
                 {
                     return 0;
                 }
             });
+        }
+
+        public void updateElites(int num)
+        {
+            // reset the elitism
+            foreach(Entity e in this._entities)
+            {
+                e.IsElite = false;
+            }
+
+            for(var i = 0; i < num; i++)
+            {
+                this._entities[i].IsElite = true;
+            }
+        }
+
+        public double getBestFitness()
+        {
+            return this._entities[0].Fitness;
         }
     }
 }

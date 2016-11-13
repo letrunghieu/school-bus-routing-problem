@@ -12,6 +12,7 @@ namespace SBRP.Algorithms.GeneticKang2015
         private int[][] _chromosome;
 
         public double Fitness { get; set; }
+        public bool IsElite { get; set; }
 
         public Entity(int numBuses, int numBusStops)
         {
@@ -98,6 +99,11 @@ namespace SBRP.Algorithms.GeneticKang2015
         /// <returns></returns>
         public double getTotalDistance(double[,] distanceMatrix)
         {
+            return this.getRouteLengths(distanceMatrix).Sum();
+        }
+
+        public List<double> getRouteLengths(double[,] distanceMatrix)
+        {
             return this._routes.Select(route =>
             {
                 double dist = 0;
@@ -117,7 +123,35 @@ namespace SBRP.Algorithms.GeneticKang2015
                 }
 
                 return dist;
-            }).Sum();
+            }).ToList();
+        }
+
+        public bool isValid(double max, double[,] distanceMatrix)
+        {
+            foreach(List<int> route in this._routes)
+            {
+                double dist = 0;
+                for (var i = 0; i < route.Count; i++)
+                {
+                    // Get the distance of the two bus stops, if the current bus stop is the last one,
+                    // get the distance from it to the school. Then, sum up the distance with the current
+                    // total distance.
+                    if (i + 1 >= route.Count)
+                    {
+                        dist += distanceMatrix[route[i], 0];
+                    }
+                    else
+                    {
+                        dist += distanceMatrix[route[i], route[i + 1]];
+                    }
+                }
+
+                if (dist > max)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public override string ToString()

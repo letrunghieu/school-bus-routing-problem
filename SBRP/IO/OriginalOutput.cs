@@ -12,5 +12,15 @@ namespace SBRP.IO
         {
             throw new NotImplementedException();
         }
+
+        public void print(string s)
+        {
+            Console.Write(s);
+        }
+
+        public void printLine(string s)
+        {
+            Console.WriteLine(s);
+        }
     }
 }

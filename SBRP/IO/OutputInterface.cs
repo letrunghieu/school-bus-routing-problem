@@ -9,5 +9,7 @@ namespace SBRP.IO
     interface OutputInterface
     {
         void log(string s);
+        void print(string s);
+        void printLine(string s);
     }
 }

@@ -16,6 +16,7 @@ namespace SBRP.Algorithms.GeneticKang2015
         public double MutationRate { get; set; }
         public int ElitismNumber { get; set; }
         public int PopulationSize { get; set; }
+        public int NumberOfGenerations { get; set; }
 
         private SchoolBusRoutingProblem _sbrp;
         private OutputInterface _output;
@@ -35,6 +36,15 @@ namespace SBRP.Algorithms.GeneticKang2015
             double r;
             this._generateInitialPopulation();
             this._sort();
+            this._updateElites();
+
+            int generation = 0;
+            this._output.printLine(String.Format("Generation: {0} - Best solution fitness {1}", generation, this._population.getBestFitness()));
+
+            for(generation = 1; generation <= this.NumberOfGenerations; generation++)
+            {
+                this._output.printLine(String.Format("Generation: {0} - Best solution fitness {1}", generation, this._population.getBestFitness()));
+            }
 
             r = this._rand.NextDouble();
         }
@@ -42,13 +52,14 @@ namespace SBRP.Algorithms.GeneticKang2015
         private void _generateInitialPopulation()
         {
             this._population = new Population();
-            for (var i = 0; i < this.PopulationSize; i++)
+            while(this._population.CurrentPopulation < this.PopulationSize)
             {
                 // Allocate buses to bus stops
                 List<int> buses = Enumerable.Range(1, this._sbrp.NumBuses).ToList();
                 List<int> busStops = Enumerable.Range(1, this._sbrp.NumBusStops).ToList();
                 Entity entity = new Entity(this._sbrp.NumBuses, this._sbrp.BusStops.Length);
                 int index, bus, busStop, busCapacity;
+                double routeLength;
 
                 index = this._rand.Next(0, buses.Count - 1);
                 bus = buses[index];
@@ -62,6 +73,7 @@ namespace SBRP.Algorithms.GeneticKang2015
 
                     // check the bus capacity
                     busCapacity = 0;
+                    routeLength = 0;
                     foreach(int bs in entity.getRoute(bus)) {
                         busCapacity += this._sbrp.BusStops[bs - 1].NumStudent;
                     }
@@ -78,7 +90,9 @@ namespace SBRP.Algorithms.GeneticKang2015
                 }
 
                 entity.sortBusStopsInRoutes(this._sbrp.DistanceMatrix);
+
                 this._population.addEntity(entity.encode());
+
             }
         }
 
@@ -101,7 +115,20 @@ namespace SBRP.Algorithms.GeneticKang2015
         /// <returns></returns>
         private double _calculateFitness(Entity entity)
         {
-            return entity.getTotalDistance(this._sbrp.DistanceMatrix);
+            var routeLengths = entity.getRouteLengths(this._sbrp.DistanceMatrix);
+            double totalLength = 0;
+
+            foreach(double l in routeLengths)
+            {
+                totalLength += l;
+
+                if (l > this._sbrp.MaxRiddingTime)
+                {
+                    totalLength += (l - this._sbrp.MaxRiddingTime);
+                }
+            }
+
+            return totalLength;
         }
 
     }

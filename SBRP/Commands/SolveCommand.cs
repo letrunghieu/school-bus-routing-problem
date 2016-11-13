@@ -35,7 +35,8 @@ namespace SBRP.Commands
                 CrossoverRate = this._options.CrossoverRate,
                 MutationRate = this._options.MutationRate,
                 ElitismNumber = this._options.ElitismNumber,
-                PopulationSize = this._options.PopulationSize
+                PopulationSize = this._options.PopulationSize,
+                NumberOfGenerations = this._options.NumGenerations
             };
 
             ga.run();

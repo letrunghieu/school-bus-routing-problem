@@ -39,11 +39,11 @@ namespace SBRP.Algorithms.GeneticKang2015
             this._updateElites();
 
             int generation = 0;
-            this._output.printLine(String.Format("Generation: {0} - Best solution fitness {1}", generation, this._population.getBestFitness()));
+            this._output.printLine(String.Format("Generation: {0} - Best solution fitness {1} ({2})", generation, this._population.getBestFitness(), this._population.getBestSolutionRoutesLength(this._sbrp.DistanceMatrix)));
 
             for(generation = 1; generation <= this.NumberOfGenerations; generation++)
             {
-                this._output.printLine(String.Format("Generation: {0} - Best solution fitness {1}", generation, this._population.getBestFitness()));
+                this._output.printLine(String.Format("Generation: {0} - Best solution fitness {1} ({2})", generation, this._population.getBestFitness(), this._population.getBestSolutionRoutesLength(this._sbrp.DistanceMatrix)));
             }
 
             r = this._rand.NextDouble();
@@ -71,25 +71,14 @@ namespace SBRP.Algorithms.GeneticKang2015
                     busStop = busStops[index];
                     busStops.RemoveAt(index);
 
-                    // check the bus capacity
-                    busCapacity = 0;
-                    routeLength = 0;
-                    foreach(int bs in entity.getRoute(bus)) {
-                        busCapacity += this._sbrp.BusStops[bs - 1].NumStudent;
-                    }
-
-                    // If the bus does not have enough seats, we randomly pick a new bus
-                    if (busCapacity + this._sbrp.BusStops[busStop - 1].NumStudent > this._sbrp.VehicleCapacity)
+                    // if the distance constraint is violated, we choose a new bus
+                    if (!entity.assignBusToBusStop(bus, busStop, this._sbrp.BusStops.Select(st => st.NumStudent).ToArray(), this._sbrp.DistanceMatrix, this._sbrp.VehicleCapacity, this._sbrp.MaxRiddingTime))
                     {
                         index = this._rand.Next(0, buses.Count - 1);
                         bus = buses[index];
                         buses.RemoveAt(index);
                     }
-
-                    entity.assignBusToBusStop(bus, busStop);
                 }
-
-                entity.sortBusStopsInRoutes(this._sbrp.DistanceMatrix);
 
                 this._population.addEntity(entity.encode());
 
@@ -116,19 +105,7 @@ namespace SBRP.Algorithms.GeneticKang2015
         private double _calculateFitness(Entity entity)
         {
             var routeLengths = entity.getRouteLengths(this._sbrp.DistanceMatrix);
-            double totalLength = 0;
-
-            foreach(double l in routeLengths)
-            {
-                totalLength += l;
-
-                if (l > this._sbrp.MaxRiddingTime)
-                {
-                    totalLength += (l - this._sbrp.MaxRiddingTime);
-                }
-            }
-
-            return totalLength;
+            return routeLengths.Sum();
         }
 
     }

@@ -67,5 +67,10 @@ namespace SBRP.Algorithms.GeneticKang2015
         {
             return this._entities[0].Fitness;
         }
+
+        public string getBestSolutionRoutesLength(double[,] dmat)
+        {
+            return String.Join(",", this._entities[0].getRouteLengths(dmat).ToArray());
+        }
     }
 }

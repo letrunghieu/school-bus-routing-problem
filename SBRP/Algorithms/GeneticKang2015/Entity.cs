@@ -33,9 +33,71 @@ namespace SBRP.Algorithms.GeneticKang2015
         /// </summary>
         /// <param name="bus">1-index</param>
         /// <param name="busStop">0-index, 0 is the school</param>
-        public void assignBusToBusStop(int bus, int busStop)
+        public bool assignBusToBusStop(int bus, int busStop, int[] busStopStudents, double[,] distanceMatrix, int busCapacity, double mrt)
         {
-            this._routes[bus - 1].Add(busStop);
+            List<int> busStops = this._routes[bus - 1];
+            int capacity = busStops.Select(bs => busStopStudents[bs - 1]).Sum();
+
+            // do not add this bus stop to the current route if the bus is almost full
+            if (capacity + busStopStudents[busStop - 1] > busCapacity)
+            {
+                return false;
+            }
+
+            List<int> newBusStops = new List<int>(busStops);
+            newBusStops.Add(busStop);
+
+            List<int> sortedRoute = new List<int>(newBusStops.Count);
+
+            // reorder the new list of bus stop to calculate the route length
+            int k = 0, k1 = 0;
+            double currentDist = -1;
+
+            // find the bus stop that is furthest away from the school
+            foreach(int bs in newBusStops)
+            {
+                if (distanceMatrix[0, bs] > currentDist)
+                {
+                    k = bs;
+                    currentDist = distanceMatrix[0, bs];
+                }
+            }
+
+            double totalDist = 0;
+
+            sortedRoute.Add(k);
+            newBusStops.Remove(k);
+            while(newBusStops.Count > 0)
+            {
+                // choose the next bus stop to be the nearest one to k
+                currentDist = -1;
+                foreach(int bs in newBusStops)
+                {
+                    if (distanceMatrix[k, bs] > currentDist)
+                    {
+                        k1 = bs;
+                        currentDist = distanceMatrix[k, bs];
+                    }
+                }
+                sortedRoute.Add(k1);
+                newBusStops.Remove(k1);
+                totalDist += distanceMatrix[k, k1];
+                k = k1;
+
+                if (sortedRoute.Count > busStops.Count + 1)
+                {
+                    Console.WriteLine("Error");
+                }
+            }
+
+            // if the route length is greater than the max value, return false
+            if (totalDist + distanceMatrix[k, 0] > mrt)
+            {
+                return false;
+            }
+
+            this._routes[bus - 1] = sortedRoute;
+            return true;
         }
 
         /// <summary>

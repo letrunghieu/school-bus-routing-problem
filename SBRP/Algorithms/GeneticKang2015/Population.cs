@@ -21,6 +21,11 @@ namespace SBRP.Algorithms.GeneticKang2015
             this._entities.Add(entity);
         }
 
+        public void setEntityAt(int index, Entity entity)
+        {
+            this._entities[index] = entity;
+        }
+
         /// <summary>
         /// Sort entities so that the one with the minimum fitness comes first
         /// </summary>
@@ -71,6 +76,16 @@ namespace SBRP.Algorithms.GeneticKang2015
         public string getBestSolutionRoutesLength(double[,] dmat)
         {
             return String.Join(",", this._entities[0].getRouteLengths(dmat).ToArray());
+        }
+
+        /// <summary>
+        /// Get the entity at a position i
+        /// </summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
+        public Entity getEntityAt(int i)
+        {
+            return this._entities[i];
         }
     }
 }

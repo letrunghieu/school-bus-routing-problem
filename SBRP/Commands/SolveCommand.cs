@@ -36,7 +36,8 @@ namespace SBRP.Commands
                 MutationRate = this._options.MutationRate,
                 ElitismNumber = this._options.ElitismNumber,
                 PopulationSize = this._options.PopulationSize,
-                NumberOfGenerations = this._options.NumGenerations
+                NumberOfGenerations = this._options.NumGenerations,
+                SelectionRatio = 0.25
             };
 
             ga.run();

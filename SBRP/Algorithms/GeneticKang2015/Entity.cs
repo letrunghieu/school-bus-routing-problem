@@ -28,6 +28,41 @@ namespace SBRP.Algorithms.GeneticKang2015
             }
         }
 
+        public Entity(int numBuses, int[][] chromosome)
+        {
+            this._routes = new List<int>[numBuses];
+            this._chromosome = chromosome;
+            int[][] tempRoutes = new int[numBuses][];
+            for (var i = 0; i < numBuses; i++)
+            {
+                tempRoutes[i] = new int[chromosome.Length];
+
+            }
+            for (var i = 0; i < this._chromosome.Length; i++)
+            {
+                if (tempRoutes[this._chromosome[i][0] - 1][this._chromosome[i][1]] > 0)
+                {
+                    Console.WriteLine("Duplicate");
+                }
+                tempRoutes[this._chromosome[i][0] - 1][this._chromosome[i][1]] = i + 1;
+            }
+            for (var i = 0; i < numBuses; i++)
+            {
+                this._routes[i] = new List<int>(tempRoutes[i]);
+                this._routes[i].RemoveAll(s => (s == 0));
+            }
+        }
+
+        public int[][] getChromosome()
+        {
+            int[][] copy = new int[this._chromosome.Length][];
+            for(var i = 0; i < this._chromosome.Length; i++)
+            {
+                copy[i] = new int[2] { this._chromosome[i][0], this._chromosome[i][1] };
+            }
+            return copy;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -91,10 +126,10 @@ namespace SBRP.Algorithms.GeneticKang2015
             }
 
             // if the route length is greater than the max value, return false
-            if (totalDist + distanceMatrix[k, 0] > mrt)
-            {
-                return false;
-            }
+            //if (totalDist + distanceMatrix[k, 0] > mrt)
+            //{
+            //    return false;
+            //}
 
             this._routes[bus - 1] = sortedRoute;
             return true;
@@ -214,6 +249,22 @@ namespace SBRP.Algorithms.GeneticKang2015
                 }
             }
             return true;
+        }
+
+        public void optimizeBusStopOrders(double[,] distanceMatrix)
+        {
+
+        }
+
+        public void printBeautifully()
+        {
+            for(var i = 0; i < this._routes.Length; i++)
+            {
+                if (this._routes[i].Count > 0)
+                {
+                    Console.WriteLine(String.Format("Bus {0} ({1}): {2}", i, this._routes[i].Count,  String.Join(", ", this._routes[i].ToArray())));
+                }
+            }
         }
 
         public override string ToString()

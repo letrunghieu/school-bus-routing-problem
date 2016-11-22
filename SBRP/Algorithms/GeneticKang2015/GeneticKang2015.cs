@@ -24,6 +24,7 @@ namespace SBRP.Algorithms.GeneticKang2015
         private Random _rand;
 
         private Population _population;
+        private int[] _students;
 
         public GeneticKang2015(SchoolBusRoutingProblem sbrp, OutputInterface output)
         {
@@ -35,12 +36,14 @@ namespace SBRP.Algorithms.GeneticKang2015
         public void run()
         {
             double r;
+            int[] students = this._sbrp.BusStops.Select(bs => bs.NumStudent).ToArray();
+            this._students = students;
             this._generateInitialPopulation();
             this._sort();
 
             int generation = 0;
-            this._population.getEntityAt(0).printBeautifully();
-            this._output.printLine(String.Format("Generation: {0} - Best solution fitness {1} ({2})", generation, this._population.getBestFitness(), this._population.getBestSolutionRoutesLength(this._sbrp.DistanceMatrix)));
+            //this._population.getEntityAt(0).printBeautifully();
+            this._output.printLine(String.Format("Generation: {0,3} - Best solution fitness {1,8:####.000}", generation, this._population.getBestFitness(), this._population.getBestSolutionRoutesLength(this._sbrp.DistanceMatrix)));
             
 
             for (generation = 1; generation <= this.NumberOfGenerations; generation++)
@@ -93,12 +96,14 @@ namespace SBRP.Algorithms.GeneticKang2015
                 this._updateElites(newPopulation);
                 this._population = newPopulation;
                 this._sort();
-                this._population.getEntityAt(0).printBeautifully();
-                this._output.printLine(String.Format("Generation: {0} - Best solution fitness {1} \n({2})\n", generation, this._population.getBestFitness(), this._population.getBestSolutionRoutesLength(this._sbrp.DistanceMatrix)));
+                //this._population.getEntityAt(0).printBeautifully(this._sbrp.DistanceMatrix, students);
+                this._output.printLine(String.Format("Generation: {0,3} - Best solution fitness {1,8:####.000} ({3,8:####.000} minutes)", generation, this._population.getBestFitness(), this._population.getBestSolutionRoutesLength(this._sbrp.DistanceMatrix), this._population.getEntityAt(0).getTotalDistance(this._sbrp.DistanceMatrix)));
             }
 
-            Console.WriteLine("Solution found");
-            this._population.getEntityAt(0).printBeautifully();
+            Console.WriteLine("\nSolution found");
+            this._population.getEntityAt(0).printBeautifully(this._sbrp.DistanceMatrix, students);
+
+            this._output.saveSolution(this._sbrp, this._population.getEntityAt(0).getRoutes());
 
             r = this._rand.NextDouble();
         }
@@ -335,7 +340,8 @@ namespace SBRP.Algorithms.GeneticKang2015
         /// <param name="entity"></param>
         private void _repair(Entity entity)
         {
-            entity.optimizeBusStopOrders(this._sbrp.DistanceMatrix);
+            entity.fixBusCapacities(this._students, this._sbrp.VehicleCapacity)
+                .encode();
         }
 
         /// <summary>
@@ -372,7 +378,17 @@ namespace SBRP.Algorithms.GeneticKang2015
         private double _calculateFitness(Entity entity)
         {
             var routeLengths = entity.getRouteLengths(this._sbrp.DistanceMatrix);
-            return routeLengths.Sum();
+            double dist = 0;
+            foreach(double route in routeLengths)
+            {
+                dist += route;
+                // penalty
+                if (route > this._sbrp.MaxRiddingTime)
+                {
+                    dist += 10 * (route - this._sbrp.MaxRiddingTime);
+                }
+            }
+            return dist;
         }
 
     }

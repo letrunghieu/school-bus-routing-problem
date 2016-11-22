@@ -11,5 +11,6 @@ namespace SBRP.IO
         void log(string s);
         void print(string s);
         void printLine(string s);
+        void saveSolution(SchoolBusRoutingProblem rbrp, List<int>[] routes);
     }
 }

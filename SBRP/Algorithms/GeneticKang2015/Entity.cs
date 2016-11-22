@@ -50,7 +50,7 @@ namespace SBRP.Algorithms.GeneticKang2015
         public int[][] getChromosome()
         {
             int[][] copy = new int[this._chromosome.Length][];
-            for(var i = 0; i < this._chromosome.Length; i++)
+            for (var i = 0; i < this._chromosome.Length; i++)
             {
                 copy[i] = new int[2] { this._chromosome[i][0], this._chromosome[i][1] };
             }
@@ -83,7 +83,7 @@ namespace SBRP.Algorithms.GeneticKang2015
             double currentDist = -1;
 
             // find the bus stop that is furthest away from the school
-            foreach(int bs in newBusStops)
+            foreach (int bs in newBusStops)
             {
                 if (distanceMatrix[0, bs] > currentDist)
                 {
@@ -96,11 +96,11 @@ namespace SBRP.Algorithms.GeneticKang2015
 
             sortedRoute.Add(k);
             newBusStops.Remove(k);
-            while(newBusStops.Count > 0)
+            while (newBusStops.Count > 0)
             {
                 // choose the next bus stop to be the nearest one to k
                 currentDist = -1;
-                foreach(int bs in newBusStops)
+                foreach (int bs in newBusStops)
                 {
                     if (distanceMatrix[k, bs] > currentDist)
                     {
@@ -137,6 +137,11 @@ namespace SBRP.Algorithms.GeneticKang2015
         public List<int> getRoute(int i)
         {
             return this._routes[i - 1];
+        }
+
+        public List<int>[] getRoutes()
+        {
+            return this._routes;
         }
 
         /// <summary>
@@ -219,7 +224,7 @@ namespace SBRP.Algorithms.GeneticKang2015
 
         public bool isValid(double max, double[,] distanceMatrix)
         {
-            foreach(List<int> route in this._routes)
+            foreach (List<int> route in this._routes)
             {
                 double dist = 0;
                 for (var i = 0; i < route.Count; i++)
@@ -250,13 +255,111 @@ namespace SBRP.Algorithms.GeneticKang2015
 
         }
 
+        public Entity fixBusCapacities(int[] students, int busCapacity)
+        {
+            List<int> redundantBusStops = new List<int>();
+            int currentCapacity;
+            int currentIndex;
+            int[] tmpCapacities = new int[this._routes.Length];
+
+            // traverse through routes and let all bus capacities smaller than the limitation
+            for (var r = 0; r < this._routes.Length; r++)
+            {
+                List<int> route = this._routes[r];
+                currentCapacity = 0;
+                currentIndex = 0;
+                for (var i = 0; i < route.Count; i++)
+                {
+                    currentCapacity += students[route[i] - 1];
+                    if (currentCapacity > busCapacity)
+                    {
+                        currentIndex = i - 1;
+                        tmpCapacities[r] = currentCapacity - busCapacity;
+                        break;
+                    }
+                }
+                tmpCapacities[r] = currentCapacity;
+
+                if (currentIndex > 0)
+                {
+                    for (var i = route.Count - 1; i > currentIndex; i--)
+                    {
+
+                        redundantBusStops.Add(route[i]);
+                        route.RemoveAt(i);
+                    }
+                }
+            }
+
+            // add redundants bus stops to buses with lowest loads
+            foreach(int busStop in redundantBusStops)
+            {
+                int routeIndex = 0;
+                int minLoad = Int32.MaxValue ;
+                for (int r = 0; r < tmpCapacities.Length; r++)
+                {
+                    if (tmpCapacities[r] < minLoad)
+                    {
+                        minLoad = tmpCapacities[r];
+                        routeIndex = r;
+                    }
+                }
+
+                this._routes[routeIndex].Add(busStop);
+                tmpCapacities[routeIndex] += students[busStop - 1];
+            }
+
+            return this;
+        }
+
         public void printBeautifully()
         {
-            for(var i = 0; i < this._routes.Length; i++)
+            for (var i = 0; i < this._routes.Length; i++)
             {
                 if (this._routes[i].Count > 0)
                 {
-                    Console.WriteLine(String.Format("Bus {0} ({1}): {2}", i, this._routes[i].Count,  String.Join(", ", this._routes[i].ToArray())));
+                    Console.WriteLine(String.Format("Bus {0} ({1}): {2}", i, this._routes[i].Count, String.Join(", ", this._routes[i].ToArray())));
+                }
+            }
+        }
+
+        public void printBeautifully(double[,] distanceMatrix)
+        {
+            for (var i = 0; i < this._routes.Length; i++)
+            {
+                if (this._routes[i].Count > 0)
+                {
+                    Console.Write(String.Format("Bus {0,2} ({1,2} stops)", i, this._routes[i].Count));
+                    double dist = 0;
+                    for (var st = 0; st < this._routes[i].Count - 2; st++)
+                    {
+                        dist += distanceMatrix[this._routes[i][st], this._routes[i][st + 1]];
+                    }
+                    dist += distanceMatrix[this._routes[i][this._routes[i].Count - 1], 0];
+                    Console.Write(" {0,6:#.000} minutes: ", dist);
+                    Console.WriteLine(String.Format("{0}", String.Join(", ", this._routes[i].ToArray())));
+                }
+            }
+        }
+
+        public void printBeautifully(double[,] distanceMatrix, int[] students)
+        {
+            for (var i = 0; i < this._routes.Length; i++)
+            {
+                if (this._routes[i].Count > 0)
+                {
+                    Console.Write(String.Format("Bus {0,2} ({1,2} stops)", i, this._routes[i].Count));
+                    double dist = 0;
+                    int stu = 0;
+                    for (var st = 0; st < this._routes[i].Count - 1; st++)
+                    {
+                        dist += distanceMatrix[this._routes[i][st], this._routes[i][st + 1]];
+                        stu += students[this._routes[i][st] - 1];
+                    }
+                    dist += distanceMatrix[this._routes[i][this._routes[i].Count - 1], 0];
+                    stu += students[this._routes[i][this._routes[i].Count - 1] - 1];
+                    Console.Write(" {0,6:#.000} minutes, {1,3} students: ", dist, stu);
+                    Console.WriteLine(String.Format("{0}", String.Join(", ", this._routes[i].ToArray())));
                 }
             }
         }

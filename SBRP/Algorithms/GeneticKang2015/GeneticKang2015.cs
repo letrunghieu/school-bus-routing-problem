@@ -43,8 +43,8 @@ namespace SBRP.Algorithms.GeneticKang2015
 
             int generation = 0;
             //this._population.getEntityAt(0).printBeautifully();
-            this._output.printLine(String.Format("Generation: {0,3} - Best solution fitness {1,8:####.000}", generation, this._population.getBestFitness(), this._population.getBestSolutionRoutesLength(this._sbrp.DistanceMatrix)));
-            
+            this._output.printLine(String.Format("Generation: {0,3} - Best solution fitness {1,8:####.000} ({3,8:####.000} minutes)", generation, this._population.getBestFitness(), this._population.getBestSolutionRoutesLength(this._sbrp.DistanceMatrix), this._population.getEntityAt(0).getTotalDistance(this._sbrp.DistanceMatrix)));
+
 
             for (generation = 1; generation <= this.NumberOfGenerations; generation++)
             {

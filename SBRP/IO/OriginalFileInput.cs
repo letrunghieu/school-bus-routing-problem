@@ -34,7 +34,8 @@ namespace SBRP.IO
                 busStops = csv.GetRecords<BusStop>().ToArray();
             }
 
-            this._nBusStops = busStops.Length;
+            // the first "bus stop" is the school
+            this._nBusStops = busStops.Length - 1;
 
             return busStops;
         }

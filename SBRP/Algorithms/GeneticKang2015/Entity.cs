@@ -33,14 +33,19 @@ namespace SBRP.Algorithms.GeneticKang2015
             this._routes = new List<int>[numBuses];
             this._chromosome = chromosome;
             int[][] tempRoutes = new int[numBuses][];
+            // Initiate each route with a list of N genes (N is the number of bus stops)
             for (var i = 0; i < numBuses; i++)
             {
                 this._routes[i] = new List<int>(new int[chromosome.Length]);
             }
+
+            // Insert the bus stop (i+1) to the route marked by the gene chromosome[i][0] at chromosome[i][1] the position
             for (var i = 0; i < this._chromosome.Length; i++)
             {
                 this._routes[this._chromosome[i][0] - 1].Insert(this._chromosome[i][1], (i + 1));
             }
+
+            // Remove all empty genes
             for (var i = 0; i < numBuses; i++)
             {
                 this._routes[i].RemoveAll(s => (s == 0));
@@ -65,10 +70,10 @@ namespace SBRP.Algorithms.GeneticKang2015
         public bool assignBusToBusStop(int bus, int busStop, int[] busStopStudents, double[,] distanceMatrix, int busCapacity, double mrt)
         {
             List<int> busStops = this._routes[bus - 1];
-            int capacity = busStops.Select(bs => busStopStudents[bs - 1]).Sum();
+            int capacity = busStops.Select(bs => busStopStudents[bs]).Sum();
 
             // do not add this bus stop to the current route if the bus is almost full
-            if (capacity + busStopStudents[busStop - 1] > busCapacity)
+            if (capacity + busStopStudents[busStop] > busCapacity)
             {
                 return false;
             }
@@ -260,6 +265,8 @@ namespace SBRP.Algorithms.GeneticKang2015
             List<int> redundantBusStops = new List<int>();
             int currentCapacity;
             int currentIndex;
+
+            // The tmpCapacities hold the current capacity of each bus
             int[] tmpCapacities = new int[this._routes.Length];
 
             // traverse through routes and let all bus capacities smaller than the limitation
@@ -270,11 +277,11 @@ namespace SBRP.Algorithms.GeneticKang2015
                 currentIndex = 0;
                 for (var i = 0; i < route.Count; i++)
                 {
-                    currentCapacity += students[route[i] - 1];
+                    currentCapacity += students[route[i]];
                     if (currentCapacity > busCapacity)
                     {
                         currentIndex = i - 1;
-                        tmpCapacities[r] = currentCapacity - busCapacity;
+                        tmpCapacities[r] = currentCapacity - students[route[i]];
                         break;
                     }
                 }
@@ -306,7 +313,7 @@ namespace SBRP.Algorithms.GeneticKang2015
                 }
 
                 this._routes[routeIndex].Add(busStop);
-                tmpCapacities[routeIndex] += students[busStop - 1];
+                tmpCapacities[routeIndex] += students[busStop];
             }
 
             return this;
@@ -354,10 +361,10 @@ namespace SBRP.Algorithms.GeneticKang2015
                     for (var st = 0; st < this._routes[i].Count - 1; st++)
                     {
                         dist += distanceMatrix[this._routes[i][st], this._routes[i][st + 1]];
-                        stu += students[this._routes[i][st] - 1];
+                        stu += students[this._routes[i][st]];
                     }
                     dist += distanceMatrix[this._routes[i][this._routes[i].Count - 1], 0];
-                    stu += students[this._routes[i][this._routes[i].Count - 1] - 1];
+                    stu += students[this._routes[i][this._routes[i].Count - 1]];
                     Console.Write(" {0,6:#.000} minutes, {1,3} students: ", dist, stu);
                     Console.WriteLine(String.Format("{0}", String.Join(", ", this._routes[i].ToArray())));
                 }

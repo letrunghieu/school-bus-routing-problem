@@ -105,19 +105,18 @@ namespace SBRP.Algorithms.GeneticKang2015
 
             this._output.saveSolution(this._sbrp, this._population.getEntityAt(0).getRoutes());
 
-            r = this._rand.NextDouble();
+            this._output.printLine("\nDone.");
         }
 
         private void _generateInitialPopulation()
         {
             this._population = new Population();
-            int[] busStopStudents = this._sbrp.BusStops.Select(st => st.NumStudent).ToArray();
             while (this._population.CurrentPopulation < this.PopulationSize)
             {
                 // Allocate buses to bus stops
                 List<int> buses = Enumerable.Range(1, this._sbrp.NumBuses).ToList();
                 List<int> busStops = Enumerable.Range(1, this._sbrp.NumBusStops).ToList();
-                Entity entity = new Entity(this._sbrp.NumBuses, this._sbrp.BusStops.Length);
+                Entity entity = new Entity(this._sbrp.NumBuses, this._sbrp.NumBusStops);
                 int index, bus, busStop;
 
                 index = this._rand.Next(0, buses.Count - 1);
@@ -126,17 +125,18 @@ namespace SBRP.Algorithms.GeneticKang2015
 
                 while (busStops.Count > 0)
                 {
+                    // pick a random bus stop from the set of available bus stops {1..BS}
                     index = this._rand.Next(0, busStops.Count - 1);
                     busStop = busStops[index];
                     busStops.RemoveAt(index);
 
                     // if the distance constraint is violated, we choose a new bus
-                    if (!entity.assignBusToBusStop(bus, busStop, busStopStudents, this._sbrp.DistanceMatrix, this._sbrp.VehicleCapacity, this._sbrp.MaxRiddingTime))
+                    if (!entity.assignBusToBusStop(bus, busStop, this._students, this._sbrp.DistanceMatrix, this._sbrp.VehicleCapacity, this._sbrp.MaxRiddingTime))
                     {
                         index = this._rand.Next(0, buses.Count - 1);
                         bus = buses[index];
                         buses.RemoveAt(index);
-                        entity.assignBusToBusStop(bus, busStop, busStopStudents, this._sbrp.DistanceMatrix, this._sbrp.VehicleCapacity, this._sbrp.MaxRiddingTime);
+                        entity.assignBusToBusStop(bus, busStop, this._students, this._sbrp.DistanceMatrix, this._sbrp.VehicleCapacity, this._sbrp.MaxRiddingTime);
                     }
                 }
 

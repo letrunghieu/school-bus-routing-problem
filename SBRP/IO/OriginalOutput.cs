@@ -27,7 +27,7 @@ namespace SBRP.IO
         public void saveSolution(SchoolBusRoutingProblem sbrp, List<int>[] routes)
         {
             int i = 0;
-            string outputFile = "output.txt";
+            string outputFile = "routes.txt";
             using(var sw = new System.IO.StreamWriter(outputFile))
             {
                 var csv = new CsvWriter(sw);
@@ -44,18 +44,19 @@ namespace SBRP.IO
                     foreach(int busStop in route)
                     {
                         csv.WriteField(i);
-                        csv.WriteField(sbrp.BusStops[busStop - 1].X);
-                        csv.WriteField(sbrp.BusStops[busStop - 1].Y);
-                        csv.WriteField(sbrp.BusStops[busStop - 1].NumStudent);
+                        csv.WriteField(sbrp.BusStops[busStop].X);
+                        csv.WriteField(sbrp.BusStops[busStop].Y);
+                        csv.WriteField(sbrp.BusStops[busStop].NumStudent);
                         csv.NextRecord();
                     }
-                    // add the school
-                    // TODO: save the school location
+                    // add the school, the 0th "bus stop"
                     csv.WriteField(i);
-                    csv.WriteField(10.895213);
-                    csv.WriteField(106.651882);
+                    csv.WriteField(sbrp.BusStops[0].X);
+                    csv.WriteField(sbrp.BusStops[0].Y);
                     csv.WriteField("");
                     csv.NextRecord();
+
+                    // add the divider line
                     csv.WriteField("*");
                     csv.WriteField("");
                     csv.WriteField("");

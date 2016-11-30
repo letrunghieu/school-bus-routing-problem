@@ -20,7 +20,9 @@ namespace SBRP
         {
             this.BusStops = bs;
             this.DistanceMatrix = dmat;
-            this.NumBusStops = bs.Length;
+
+            // the first "bus stop" is the school
+            this.NumBusStops = bs.Length - 1;
         }
     }
 }
